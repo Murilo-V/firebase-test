@@ -1,4 +1,23 @@
+import { collection, DocumentData, getDocs } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { db } from "../lib/firebase";
+
 function Table() {
+
+    const [users, setUsers] = useState<DocumentData[]>([])
+
+    useEffect(() => {
+        async function getUsers() {
+            const querySnapshot = await getDocs(collection(db, "users"));
+            const docs: DocumentData[] = [];
+            querySnapshot.forEach((doc) => {
+                docs.push(doc.data());
+                setUsers(docs);
+            });
+        }
+        getUsers();
+    }, []);
+
     return (
         <div className="flex flex-col">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
