@@ -28,6 +28,12 @@ Para acessar o deploy deste projeto, [clique aqui.](https://fir-test-6babe.web.a
 
 **Infra:** Firebase Hosting
 
+## Relatório/Curiosidades
+
+- Utilizei a ContextAPI no React para compartilhar estado entre os componentes.
+- O deploy foi feito utilizando Firebase CLI.
+- Com o Typescript foi muito boa a integração com a tipagem da biblioteca do Firebase.
+
 ## Rodando localmente
 
 Clone o projeto
