@@ -7,7 +7,14 @@ import { db } from "../lib/firebase";
 function Table() {
 
     const [users, setUsers] = useState<UserData[]>([]);
+    const [tableData, setTableData] = useState<UserData[]>([]);
     const { setFormState, setEditState, setUserId } = useContext(UsersDataContext);
+    const [page, setPage] = useState<number>(1);
+    const pageSize = 3;
+
+    useEffect(() => {
+      setTableData(users.slice((page - 1) * pageSize, page * pageSize));
+    }, [page, users]);
 
     useEffect(() => {
         async function getUsers() {
@@ -84,7 +91,7 @@ function Table() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                   {
-                    users.map((user) => {
+                    tableData.map((user) => {
                         return (
                             <tr key={String(Math.random())}>
                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -115,6 +122,9 @@ function Table() {
                   }
               </tbody>
             </table>
+              <p className="mt-3">Página { page } de { Math.ceil(users.length / pageSize) }</p>
+              <button className="bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-3 py-2 rounded-md text-sm font-medium mr-4 shadow-lg mr-4" onClick={() => setPage(page - 1)} disabled={page === 1}>Anterior</button>
+              <button className="bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-3 py-2 rounded-md text-sm font-medium mr-4 shadow-lg" onClick={() => setPage(page + 1)} disabled={page === Math.ceil(users.length / pageSize)}>Próximo</button>
           </div>
         </div>
       </div>
