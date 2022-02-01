@@ -1,18 +1,21 @@
-import { collection, deleteDoc, doc, DocumentData, onSnapshot, query } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { collection, deleteDoc, doc, onSnapshot, query } from "firebase/firestore";
+import { useContext, useEffect, useState } from "react";
+import UsersDataContext from "../contexts/UsersData";
+import { User, UserData } from "../interfaces/User";
 import { db } from "../lib/firebase";
 
 function Table() {
 
-    const [users, setUsers] = useState<DocumentData[]>([])
+    const [users, setUsers] = useState<UserData[]>([]);
+    const { setFormState, setEditState, setUserId } = useContext(UsersDataContext);
 
     useEffect(() => {
         async function getUsers() {
             const q = query(collection(db, "users"))
             onSnapshot(q, (querySnapshot) => {
-                const docs: DocumentData[] = [];
+                const docs: UserData[] = [];
                 querySnapshot.forEach((doc) => {
-                    docs.push({data: doc.data(), id: doc.id});
+                    docs.push({data: doc.data() as User, id: doc.id});
                 });
                 setUsers(docs);
             }) 
@@ -21,8 +24,13 @@ function Table() {
     }, []);
 
     async function removeUser(id: string) {
-        console.log(id)
         await deleteDoc(doc(db, "users", id));
+    }
+
+    function allowUserDataEdition(userData: UserData) {
+        setFormState(userData.data);
+        setUserId(userData.id);
+        setEditState(true);
     }
 
     return (
@@ -98,7 +106,7 @@ function Table() {
                                     {user.data.uf}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button className="bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium mr-4 shadow-lg" type="button">Editar</button>
+                                    <button className="bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium mr-4 shadow-lg" onClick={() => allowUserDataEdition(user)}type="button">Editar</button>
                                     <button className="bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium shadow-xl shadow-lg" onClick={() => removeUser(user.id)} type="button">Excluir</button>
                                 </td>
                             </tr>
@@ -111,7 +119,7 @@ function Table() {
         </div>
       </div>
     </div>
-    )
+    );
 }
 
 export default Table;
